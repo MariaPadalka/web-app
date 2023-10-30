@@ -1,0 +1,23 @@
+
+.App {
+  display: flex;
+  justify-content: center; /* Горизонтальне центрування */
+  align-items: center; /* Вертикальне центрування */
+  min-height: 100vh; /*Заповнити висоту батьківського контейнера */
+  background-color: #ffffff;
+}
+
+/* .App-header {
+  background-color: #282c34;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(10px + 2vmin);
+  color: white;
+} */
+
+.App-link {
+  color: #61dafb;
+}
