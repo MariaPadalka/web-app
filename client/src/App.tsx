@@ -1,22 +1,41 @@
 // src/App.tsx
-import React from 'react';
+import React, { useContext, useEffect } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/Login/Login';
+import MainPage from './components/MainPage/MainPage';
 import Registration from './components/Registration/Registration';
+import EmailSent from './components/Activation/Activation';
 import './App.css';
+import { Context } from '.';
+import {observer} from 'mobx-react-lite';
 
 function App() {
+
+  const {store} = useContext(Context);
+
+  // eslint-disable-next-line react-hooks/rules-of-hooks
+  useEffect(()=>{
+    if(localStorage.getItem('token')){
+      store.checkAuth()
+    }
+  }, [])
+
+  if(store.isLoading){
+    return <div> Loading... </div>
+  }
+
   return (
     <div className="App">
       <Router>
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/registration" element={<Registration />} />
-          {/* Інші маршрути, якщо потрібно */}
+          <Route path="/activation" element={<EmailSent />} />
+          <Route path="/" element = {<MainPage />}/>
         </Routes>
       </Router>
     </div>
   );
 }
 
-export default App;
+export default observer(App);

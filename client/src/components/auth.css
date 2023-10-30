@@ -25,3 +25,28 @@
 .submit-button :hover{
     background-color: #4361959e;
 }
+.errorMessage{
+    color:rgb(187, 43, 43);
+}
+
+.centered-container{
+    width: 40vw;
+    text-align: center;
+}
+.horizontal-container {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px; /* Adjust the top margin as needed */
+}
+
+.emails-button{
+    width: 40%;
+    padding: 6px;
+    font-size: small;
+    height: auto;
+    background-color: #5a7ab1;
+    border-radius: 20px;
+}
+.big-text{
+    font-size: xx-large;
+}

@@ -1,11 +1,45 @@
-import React from 'react';
+import React, { useContext, useState } from 'react';
 import { Form, Input, Button } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import '../auth.css';
+import { Context } from '../..';
 
 const Registration = () => {
-  const onFinish = (values: any) => {
-    console.log('Received values:', values);
-    // Тут можна додати логіку реєстрації
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const {store} = useContext(Context);
+  const navigate = useNavigate();
+
+
+  const onFinish = async (values: any) => {
+    try {
+      
+    setLoading(true);
+    setErrorMessage('');
+
+    const message = await store.registration(values.email, values.password);
+
+    if(message){
+      setErrorMessage(message);
+      console.log('Error: ', message);
+    }
+    else{
+      navigate('/activation');
+    }
+    
+    setLoading(false);
+
+    } catch (error: any) {
+      // Handle login errors
+      setLoading(false);
+
+      if (error.response && error.response?.data?.message) {
+        setErrorMessage(error.response.data.message);
+        console.log("message", error.response.data.message);
+      } else {
+        error.response.data.message.error('Login failed. Please try again later.');
+      }
+    }
   };
 
   return (
@@ -53,9 +87,16 @@ const Registration = () => {
         >
           <Input.Password placeholder="Password" />
         </Form.Item>
+        {
+          errorMessage && (
+            <div>
+              <p className='errorMessage'>{errorMessage}</p>
+            </div>
+          )
+        }
         <Form.Item>
-          <Button type="primary" htmlType="submit" className='submit-button'>
-            Sign in
+          <Button type="primary" htmlType="submit" className='submit-button' loading={loading}>
+            Sign up
           </Button>
         </Form.Item>
         <p>

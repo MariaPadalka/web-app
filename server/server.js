@@ -9,7 +9,10 @@ const errorMiddleware = require('./middlewares/error-middleware');
 const app = express();
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors());
+app.use(cors({
+  credentials: true,
+  origin: process.env.CLIENT_URL
+}));
 app.use('/api', router);
 app.use(errorMiddleware); //always connect last
 
@@ -28,6 +31,8 @@ const start = async () => {
     await mongoose.connect(process.env.DB_URL, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+    }).then(()=>{
+      console.log('Connected to MongoDB');
     });
     app.listen(PORT, () => {
       console.log(`Server is running on http://localhost:${PORT}`);
@@ -35,15 +40,9 @@ const start = async () => {
 
 
   } catch (err) {
+    console.log("MongoBD error");
     console.log(err);
   }
 };
 
 start();
-
-
-
-
-// const runSqlScript = require("./DB/db-scripts"); // Підключення до модулю виконання SQL-скриптів
-// const scriptPath = "./DB/create-database.sql";
-// runSqlScript(scriptPath); // Виклик функції для виконання SQL-скрипта

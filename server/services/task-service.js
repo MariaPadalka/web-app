@@ -11,7 +11,6 @@ class TaskService {
         userId: userId,
         index: index
     });
-    console.log('task', task);
     const taskLog = await TaskLog.create({
       taskId: task.id,
       description: "Created",

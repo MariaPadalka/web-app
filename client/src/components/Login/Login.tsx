@@ -1,34 +1,40 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import { Form, Input, Button } from 'antd';
 import '../auth.css';
+import { Context } from '../..';
+import {observer} from 'mobx-react-lite';
+import { useNavigate } from 'react-router-dom';
+
 
 const Login = () => {
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const {store} = useContext(Context);
+  const navigate = useNavigate();
+
+  useEffect(()=>{
+    if(store.isAuth){
+        navigate('/');
+    }
+  }, [store.isAuth])
 
   const onFinish = async (values: any) => {
-    try {
-      setLoading(true);
 
-      // Send a POST request to your server's /login endpoint
-      const response = await axios.post('http://localhost:5000/api/login', values);
+    setLoading(true);
+    setErrorMessage('');
 
-      // Handle a successful login
-      console.log('Login successful', response.data);
-      setLoading(false);
+    const message = await store.login(values.email, values.password);
 
-      // You can redirect the user to another page here if needed
-    } catch (error: any) {
-      // Handle login errors
-      setLoading(false);
-      console.error('Login failed', error);
-
-      if (error.response && error.response.data.message) {
-        error.response.data.message.error(error.response.data.message);
-      } else {
-        error.response.data.message.error('Login failed. Please try again later.');
-      }
+    if(message){
+      setErrorMessage(message);
+      console.log('Error: ', message);
     }
+    else{
+      navigate('/');
+    }
+    
+    setLoading(false);
   };
 
   return (
@@ -64,6 +70,13 @@ const Login = () => {
         >
           <Input.Password placeholder="Password" />
         </Form.Item>
+        {
+          errorMessage && (
+            <div>
+              <p className='errorMessage'>{errorMessage}</p>
+            </div>
+          )
+        }
         <Form.Item>
           <Button type="primary" htmlType="submit" className='submit-button' loading={loading}>
             Log in
@@ -78,4 +91,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default observer(Login);

@@ -1,4 +1,5 @@
 const UserService = require('../services/user-service');
+const mailService = require('../services/mail-service');
 const {validationResult} = require('express-validator');
 const ApiError = require('../exceptions/api-error');
 
@@ -7,7 +8,7 @@ class UserController{
         try{
             const errors = validationResult(req);
             if(!errors.isEmpty()){
-                return next(ApiError.BadRequest("Помилка при валідації", errors.array()));
+                return next(ApiError.BadRequest("Validation error", errors.array()));
             }
             const { email, password, isAdmin } = req.body;
             const userData = await UserService.registration(email, password, isAdmin);
@@ -64,6 +65,21 @@ class UserController{
         try{
             const users = await UserService.getAllUsers();
             return res.json(users);
+        } catch(e){
+            console.log(e);
+        }
+    }
+
+    async sendEmail(req, res, next){
+        try{
+            const {refreshToken} = req.cookies;
+            const userData = await UserService.refresh(refreshToken);
+            if(!userData){
+                return next(ApiError.UnathorizedError("Unauthorized"));
+            }
+            const fullLink = process.env.API_URL + '/api/activate/' + activationLink
+            await mailService.sendActivationMail(userData.user.email, fullLink);
+            return res.status(200).json({ message: "Success" });
         } catch(e){
             console.log(e);
         }
