@@ -4,11 +4,14 @@ import AuthService from "../services/AuthService";
 import axios from 'axios';
 import { AuthResponse } from "../models/response/AuthResponse";
 import { API_URL } from "../http";
+import TaskService from "../services/TaskService";
+import TaskDto from "../models/TaskDto";
 
 export default class Store{
     user = {} as IUser;
     isAuth = false;
     isLoading=false;
+    tasks = [] as TaskDto[];
 
     constructor(){
         makeAutoObservable(this);
@@ -24,6 +27,9 @@ export default class Store{
 
     setLoading(value:boolean){
         this.isLoading = value;
+    }
+    setTasks(value: TaskDto[]){
+        this.tasks = value;
     }
 
     async login(email:string, password: string){
@@ -73,6 +79,49 @@ export default class Store{
             console.log(e);
         } finally{
             this.setLoading(false);
+        }
+    }
+
+    async getTasks(){
+        try{
+            const data = await TaskService.tasks();
+            this.setTasks(data.reverse());
+        }
+        catch(e: any){
+            console.log(e.response?.data?.message);
+        }
+    }
+
+    async createTask(title:string, index: number){
+        try{
+            const newTask = await TaskService.createTask(title, index);
+            console.log('newTask:', newTask);
+            const updatedTasks = [newTask, ...this.tasks];
+            this.setTasks(updatedTasks);
+        }catch(e: any){
+            console.log(e.response?.data?.message);
+            return e.response?.data?.message;
+        }
+    }
+
+    async deleteTask(id:string){
+        try{
+            const deletedTask = await TaskService.deleteTask(id);
+            const updatedTasks = this.tasks.filter(task => task._id !== id);
+            this.setTasks(updatedTasks);
+        }catch(e:any){
+            console.log(e.response?.data?.message);
+            return e.response?.data?.message;
+        }
+    }
+
+    async startTask(id:string){
+        try{
+            const result = await TaskService.startTask(id);
+            this.getTasks();
+        }catch(e:any){
+            console.log(e.response?.data?.message);
+            return e.response?.data?.message;
         }
     }
 

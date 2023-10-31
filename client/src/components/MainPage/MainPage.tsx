@@ -4,6 +4,9 @@ import { Context } from '../..';
 import {observer} from 'mobx-react-lite';
 import Header from '../Header/Header';
 import { useNavigate } from 'react-router-dom';
+import Tasks from '../Tasks/Table';
+import NewTask from '../Tasks/NewTask';
+import './main.css';
 
 
 const MainPage = () => {
@@ -20,7 +23,11 @@ const MainPage = () => {
   return (
     <>
     <Header />
-    <h1>{store.isAuth ? `User is logged in ${store.user.email}` : "LOG IN!"}</h1>
+    <div className='main-container'>
+    <p className='medium-text'> Add new task: </p>
+    <NewTask/>
+    <Tasks />
+    </div>
     </>
   );
 };

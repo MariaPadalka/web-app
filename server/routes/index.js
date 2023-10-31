@@ -12,12 +12,13 @@ router.post('/logout', userController.logout);
 router.get('/activate/:link', userController.activate);
 router.get('/refresh', userController.refresh);
 router.get('/users', authMiddleware, adminMiddleware, userController.getUsers);
-router.post('/sendEmail', authMiddleware, userController.sendEmail);
 
 router.post('/task', body('index').isInt({ gt: 0 }), 
         body('title').isLength({max:32}), authMiddleware, taskController.create);
 router.get('/tasks', authMiddleware, taskController.getTasks);
 router.delete('/task/:id', authMiddleware, taskController.delete);
+router.post('/task/start/:id', authMiddleware, taskController.start);
+router.get('/task/:id', authMiddleware, taskController.getTask);
 
 
 module.exports = router;

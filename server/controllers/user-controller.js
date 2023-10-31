@@ -69,21 +69,6 @@ class UserController{
             console.log(e);
         }
     }
-
-    async sendEmail(req, res, next){
-        try{
-            const {refreshToken} = req.cookies;
-            const userData = await UserService.refresh(refreshToken);
-            if(!userData){
-                return next(ApiError.UnathorizedError("Unauthorized"));
-            }
-            const fullLink = process.env.API_URL + '/api/activate/' + activationLink
-            await mailService.sendActivationMail(userData.user.email, fullLink);
-            return res.status(200).json({ message: "Success" });
-        } catch(e){
-            console.log(e);
-        }
-    }
 }
 
 module.exports = new UserController();

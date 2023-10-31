@@ -1,0 +1,27 @@
+.table{
+    width: 100%;
+}
+
+.new-task-container{
+    background-color:#ffffff;
+    border: 1px solid rgb(213, 210, 210);
+    padding: 20px 10px 0px 10px;
+    border-radius: 10px;
+    align-items: center;
+    width: 40%;
+    margin-left: 30%;
+    margin-bottom: 3%;
+}
+
+.add-button{
+    height: auto;
+    background-color: #436195;
+    border-radius: 20px;
+    max-width: 30vw;
+    min-width: 20vw;
+    font-size: medium;
+    margin-bottom: 0%;
+}
+.add-button :hover{
+    background-color: #4361959e;
+}

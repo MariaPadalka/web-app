@@ -21,8 +21,10 @@ class MailService{
             html:
                 `
                     <div>
-                        <h1> Follow the link to activate</h1>
-                        <a href="${link}"> link </a>
+                        <h1> Account Activation</h1>
+                        <p>Thank you for registering with our application.</p>
+                        <p>To activate your account, please follow the link below:</p>
+                        <a href="${link}"> Activate Account </a>
                     </div>
                 `
         })

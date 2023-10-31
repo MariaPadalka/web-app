@@ -11,9 +11,7 @@ const Registration = () => {
   const navigate = useNavigate();
 
 
-  const onFinish = async (values: any) => {
-    try {
-      
+  const onFinish = async (values: any) => {     
     setLoading(true);
     setErrorMessage('');
 
@@ -24,22 +22,11 @@ const Registration = () => {
       console.log('Error: ', message);
     }
     else{
+      // store.checkAuth();
       navigate('/activation');
     }
     
     setLoading(false);
-
-    } catch (error: any) {
-      // Handle login errors
-      setLoading(false);
-
-      if (error.response && error.response?.data?.message) {
-        setErrorMessage(error.response.data.message);
-        console.log("message", error.response.data.message);
-      } else {
-        error.response.data.message.error('Login failed. Please try again later.');
-      }
-    }
   };
 
   return (

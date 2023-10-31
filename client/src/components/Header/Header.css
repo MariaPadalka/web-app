@@ -6,8 +6,9 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px;
-    background-color: #f8f4f4;
-    color: rgb(0, 0, 0);
+    background-color: #f6f6f6;
+    color: rgb(15, 38, 112);
+    z-index: 100;
   }
   
 .user-info {
@@ -16,14 +17,14 @@
 }
 
 .logout-button {
-    background-color: #EB1D36;
+    background-color: #e7132cc8;
     margin-right: 20px;
     min-width: 130px;
     min-height: 45px;
     font-size: medium;
     color: white;
     border: none;
-    border-radius: 5px;
+    border-radius: 9px;
     padding: 5px 10px;
     cursor: pointer;
 }
