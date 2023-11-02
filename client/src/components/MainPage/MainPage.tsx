@@ -15,9 +15,14 @@ const MainPage = () => {
 
 // eslint-disable-next-line react-hooks/rules-of-hooks
   useEffect(()=>{
-    if(!store.isAuth){
+    if(!store.isAuth ){
         navigate('/login');
     }
+    else {
+      if(!store.user.isActivated){
+      navigate('/activation');
+    }
+  }
   }, [])
 
   return (

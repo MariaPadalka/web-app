@@ -9,11 +9,13 @@ import './tasks.css';
 const NewTask: React.FC = () =>{ 
     const {store} = useContext(Context);
     const [loading, setLoading] = useState(false);
+    const [errorMessage, setMessage] = useState('');
+    const [form] = Form.useForm();
 
 
-    useEffect(()=>{
-        store.getTasks();
-    }, [])
+    // useEffect(()=>{
+    //     store.getTasks();
+    // }, [])
 
     const onFinish= async (values:any) =>{
         setLoading(true);
@@ -26,14 +28,20 @@ const NewTask: React.FC = () =>{
         const message = await store.createTask(title, index);
 
         if(message){
+            setMessage(message);
             console.log('Error: ', message);
+        }
+        else{
+            setMessage('');
         }
 
         setLoading(false);
+        form.resetFields();
     }
 
     return(
         <Form
+        form={form}
         className="new-task-container"
         onFinish={onFinish}
         layout="vertical"
@@ -72,6 +80,13 @@ const NewTask: React.FC = () =>{
                 ]}>
                     <Input />
             </Form.Item>
+            {
+            errorMessage && (
+                <div>
+                <p className='errorMessage'>{errorMessage}</p>
+                </div>
+            )
+            }
             <Form.Item>
                 <Button type="primary" htmlType="submit" loading = {loading} className='add-button'>Add</Button>
             </Form.Item>

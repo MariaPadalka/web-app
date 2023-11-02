@@ -1,6 +1,6 @@
 const {Schema, model} = require('mongoose');
 
-const taskStatuses = ['Waiting', 'In Progress', 'Paussed', 'Done'];
+const taskStatuses = ['Waiting', 'In Progress', 'Paused', 'Done'];
 
 const TaskSchema = new Schema({
     title: {type:String,  required:true},

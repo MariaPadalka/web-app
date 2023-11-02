@@ -1,0 +1,13 @@
+.main-container {
+    margin-top: 50px; 
+    padding: 20px; 
+    width: 70vw;
+    text-align: center; 
+    justify-content: center;
+}
+.add-admin-button{
+    font-size: larger;
+    height: auto;
+    color: rgb(33, 67, 117);
+    margin: 15px;
+}

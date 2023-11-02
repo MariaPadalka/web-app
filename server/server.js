@@ -16,15 +16,18 @@ app.use(cors({
 app.use('/api', router);
 app.use(errorMiddleware); //always connect last
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.argv[2] || 5000;
+
+
+app.get("/api", (req, res) => {
+  res.json({message:["Hello, World!"]});
+});
+
 
 app.get('/favicon.ico', (req, res) => {
   res.status(204);
 });
 
-app.get("/api", (req, res) => {
-  res.json({message:["Hello, World!"]});
-});
 
 const start = async () => {
   try {

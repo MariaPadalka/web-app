@@ -8,6 +8,8 @@ import EmailSent from './components/Activation/Activation';
 import './App.css';
 import { Context } from '.';
 import {observer} from 'mobx-react-lite';
+import AdminPanel from './components/AdminPanel/AdminPanel';
+import { Spin } from 'antd';
 
 function App() {
 
@@ -21,7 +23,7 @@ function App() {
   }, [])
 
   if(store.isLoading){
-    return <div> Loading... </div>
+    return <Spin/>
   }
 
   return (
@@ -31,6 +33,7 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/registration" element={<Registration />} />
           <Route path="/activation" element={<EmailSent />} />
+          <Route path="/admin-panel" element={<AdminPanel/>}/>
           <Route path="/" element = {<MainPage />}/>
         </Routes>
       </Router>

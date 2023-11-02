@@ -1,29 +1,43 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { Button, Space, Table, Tag } from 'antd';
+import { Button, Space, Spin, Table, Tag , Modal} from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { Context } from '../..';
 import {observer} from 'mobx-react-lite';
 import './tasks.css';
 import TaskDto from '../../models/TaskDto';
+import TaskLog from '../../models/TaskLog';
+import moment from 'moment';
 
 
 const Tasks: React.FC = () =>{ 
     const {store} = useContext(Context);
-    const [deleteLoading, setDeleteLoading] = useState(false);
-    const [startLoading, setStartLoading] = useState(false);
+    const [startLoading, setStartLoading] = useState<{ [taskId: string]: boolean }>({});
+    const [detailsLoading, setDetailsLoading] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [selectedTaskId, setSelectedTaskId] = useState<string>('');
+    const [taskLogs, setTaskLogs] = useState<{ time: Date; description: string }[]>([]);
 
+    var data: TaskDto[] = store.tasks;
+    
+    useEffect(() => {
+      store.getTasks();
+    }, []);
 
+    useEffect(() => {
+      data = store.tasks;
+    }, [store.tasks]);
 
     useEffect(() => {
         // Опція для зберігання ID таймера
         let timerId: NodeJS.Timeout;
     
-        store.getTasks();
-    
         // Створюємо таймер, який буде виконувати запит кожну секунду
-        if (startLoading) {
+        if (Object.values(startLoading).some(isLoading => isLoading)) {
+
           timerId = setInterval(() => {
-            store.getTasks();
+            if(Object.values(startLoading).some(isLoading => isLoading)){
+              store.getTasks();
+            }
           }, 1000);
         }
     
@@ -35,13 +49,31 @@ const Tasks: React.FC = () =>{
         };
       }, [startLoading]);
     
-      var data: TaskDto[] = store.tasks;
-    
-      useEffect(() => {
-        data = store.tasks;
-      }, [store.tasks]);
 
-    var data: TaskDto[] = store.tasks;
+
+      const renderTaskLogs = () => {
+        return (
+          detailsLoading ? (
+            <Spin />
+          ) : (
+            <div>
+              {taskLogs.map((log, index) => (
+                <div key={index}>
+                  <p>{`Time: ${formatAndAddOffset(log.time)}`}</p>
+                  <p>{`Description: ${log.description}`}</p>
+                  {index < taskLogs.length - 1 && <hr />}
+                </div>
+              ))}
+            </div>
+          )
+        );
+      };
+      
+      const formatAndAddOffset = (time: Date) => {
+        const utcTime = moment.utc(time); // Позбавляємося від гринвіцького offset
+        const localTime = utcTime.local(); // Переводимо до місцевого offset
+        return localTime.format('YYYY-MM-DD HH:mm:ss'); // Форматуємо потрібним чином
+      };
 
 
     const columns: ColumnsType<TaskDto> = [
@@ -60,15 +92,18 @@ const Tasks: React.FC = () =>{
           title: 'Status',
           key: 'status',
           dataIndex: 'status',
-          render: (status) => {
+          render: (status, record) => {
               let color = status.length > 5 ? 'geekblue' : 'green';
               if (status === 'Paused') {
                 color = 'volcano';
               }
               return (
-                <Tag color={color} key={status}>
-                  {status.toUpperCase()}
-                </Tag>
+                <>
+                  <Tag color={color} key={status}>
+                    {status.toUpperCase()}
+                  </Tag>
+                  {startLoading[record._id] && status === "In Progress" && <Spin />}
+                </>
               );
             },
         },
@@ -88,45 +123,76 @@ const Tasks: React.FC = () =>{
             title: 'Actions',
             key: 'action',
             render: (text, record) => {
-              const isDeleteLoading = deleteLoading;
-              const isStartLoading = startLoading;
           
               return (
                 <Space size="middle">
+                    {record.status !== 'Done' && (
+                    <Button
+                      onClick={async () => {
+                        setStartLoading({ ...startLoading, [record._id]: true });
+                        await store.startTask(record._id);
+                        setStartLoading({ ...startLoading, [record._id]: false });
+                      }}
+                    >
+                      Start
+                    </Button>)}
+
+                    {record.status === 'In Progress' && (
+                    <Button
+                      onClick={async () => {
+                        await store.stopTask(record._id);
+                        setStartLoading({ ...startLoading, [record._id]: false });
+                      }}
+                    >
+                      Stop
+                    </Button>
+                  )}
+                    
+                    {record.status === 'Paused' && (
+                    <Button
+                      onClick={async () => {
+                        setStartLoading({ ...startLoading, [record._id]: true });
+                        await store.resumeTask(record._id);
+                        setStartLoading({ ...startLoading, [record._id]: false });
+                      }}
+                    >
+                      Resume
+                    </Button>
+                  )}
+                  
                   <Button
-                    loading={isDeleteLoading}
                     onClick={async () => {
-                      setDeleteLoading(true);
-                      await store.deleteTask(record._id);
-                      setDeleteLoading(false);
+                      setDetailsLoading(true);
+                      setSelectedTaskId(record._id);
+                      setIsModalOpen(true);
+                      // Отримати журнал подій для вибраного завдання
+                      const logs = await store.getTaskInfo(record._id);
+                      setTaskLogs(logs);
+                      setDetailsLoading(false);
                     }}
-                    disabled={isDeleteLoading || isStartLoading}
+                  >
+                    View details
+                  </Button>
+                  
+                  <Button
+                    onClick={async () => {
+                      await store.deleteTask(record._id);
+                    }}
                   >
                     Delete
                   </Button>
-                  {record.status !== 'Done' && (
-                    <Button
-                      loading={isStartLoading}
-                      onClick={async () => {
-                        setStartLoading(true);
-                        await store.startTask(record._id);
-                        setStartLoading(false);
-                      }}
-                      disabled={isDeleteLoading || isStartLoading}
-                    >
-                      Start
-                    </Button>
-                  )}
                 </Space>
               );
             },
           }
-          
-          
       ];
 
     return(
-        <Table columns={columns} dataSource={data} pagination={{ pageSize: 6 }} className="table"/>
+        <><Table columns={columns} dataSource={data} pagination={{ pageSize: 6 }} className="table" />
+        <Modal title="Details" open={isModalOpen} onCancel={() => {setIsModalOpen(false); setSelectedTaskId('')}} footer={null}>
+        {selectedTaskId && renderTaskLogs()}
+      </Modal>
+      </>
     )
 
 };

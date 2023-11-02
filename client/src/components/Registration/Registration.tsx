@@ -1,28 +1,28 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Form, Input, Button } from 'antd';
 import { useNavigate } from 'react-router-dom';
 import '../auth.css';
 import { Context } from '../..';
 
-const Registration = () => {
+const Registration = ({ admin = false, title = 'Welcome'}) => {
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const {store} = useContext(Context);
+  const [form] = Form.useForm();
   const navigate = useNavigate();
-
 
   const onFinish = async (values: any) => {     
     setLoading(true);
     setErrorMessage('');
-
-    const message = await store.registration(values.email, values.password);
+    
+    const message = await store.registration(values.email, values.password, admin);
 
     if(message){
       setErrorMessage(message);
       console.log('Error: ', message);
     }
     else{
-      // store.checkAuth();
+      form.resetFields();
       navigate('/activation');
     }
     
@@ -31,9 +31,10 @@ const Registration = () => {
 
   return (
     <div className="auth-container">
-      <h2>Welcome!</h2>
+      <h2> {title} </h2>
       <div className="form-container">
       <Form
+        form={form}
         name="registrationForm"
         onFinish={onFinish}
         layout="vertical"
@@ -86,9 +87,13 @@ const Registration = () => {
             Sign up
           </Button>
         </Form.Item>
-        <p>
-          Already have an account? <a href="/login">Log in</a>
-        </p>
+        {
+          title === 'Welcome' && (
+            <p>
+              Already have an account? <a href="/login">Log in</a>
+            </p>
+          )
+        }
       </Form>
       </div>
     </div>

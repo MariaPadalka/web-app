@@ -7,7 +7,7 @@ import { useNavigate } from 'react-router-dom';
 
 
 
-const Header = () => {
+const Header = ({ adminButtonVisible = true , userPanelButtonVisible = false}) => {
   const [loading, setLoading] = useState(false);
   const {store} = useContext(Context);
   const navigate = useNavigate();
@@ -29,7 +29,21 @@ const Header = () => {
       <div className="user-info">
         <span>Welcome, {store.user.email}</span>
       </div>
+      <div>
+      {
+          store.user.isAdmin && adminButtonVisible && (
+            <Button className='admin-button' onClick={() => navigate('/admin-panel')}>
+              Admin Panel
+            </Button>
+            )
+        }
+      {
+        store.user.isAdmin && userPanelButtonVisible && (
+          <Button className='user-button'  onClick={() => navigate('/')}>User Panel</Button>
+        )
+      }
       <Button onClick={onLogout} className='logout-button' loading = {loading}>Log out</Button>
+      </div>
     </div>
   );
 };

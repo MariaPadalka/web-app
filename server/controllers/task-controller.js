@@ -21,7 +21,7 @@ class TaskController{
             if(!user){
               throw ApiError.BadRequest('There is no such user')
             }
-            const taskData = await TaskService.create(title, userData.id, index);
+            const taskData = await TaskService.create(title, user.id, index);
             const taskDto = new TaskDto(taskData);
             
             return res.json(taskDto);
@@ -86,30 +86,6 @@ class TaskController{
         }
     }
 
-    async stop(req, res, next){
-        try{
-            
-        } catch(e){
-            next(e);
-        }
-    }
-
-    async resume(req, res, next){
-        try{
-            
-        } catch(e){
-            next(e);
-        }
-    }
-
-    async getTaskInfo(req, res, next){
-        try{
-           
-        } catch(e){
-            next(e);
-        }
-    }
-
     async getTasks(req, res, next){
         try{
             const {refreshToken} = req.cookies;
@@ -148,6 +124,88 @@ class TaskController{
 
             return res.json(taskDto);
         } catch(e){
+            next(e);
+        }
+    }
+
+    async getTaskInfo(req, res, next){
+        try{
+            const taskId = req.params.id;
+            const {refreshToken} = req.cookies;
+            const userData = await tokenService.validateRefreshToken(refreshToken);
+            const user = await UserModel.findById(userData.id)
+            if(!user){
+              throw ApiError.BadRequest('There is no such user');
+            }
+
+            const taskToGet = await TaskModel.findById(taskId);
+
+            if(!taskToGet){
+                throw ApiError.BadRequest('There is no such task');
+            }
+
+            if(taskToGet.userId != user.id){
+                throw ApiError.ForbidenError();
+            }
+
+            const taskLogs = await TaskService.getTaskInfo(taskId);
+
+            return res.json(taskLogs);
+        } catch(e){
+            next(e);
+        }
+    }
+
+    async stopTask(req, res, next){
+        try{
+            const taskId = req.params.id;
+            const {refreshToken} = req.cookies;
+            const userData = await tokenService.validateRefreshToken(refreshToken);
+            const user = await UserModel.findById(userData.id)
+            if(!user){
+              throw ApiError.BadRequest('There is no such user');
+            }
+
+            const taskToGet = await TaskModel.findById(taskId);
+
+            if(!taskToGet){
+                throw ApiError.BadRequest('There is no such task');
+            }
+
+            if(taskToGet.userId != user.id){
+                throw ApiError.ForbidenError();
+            }
+            const taskDto = await TaskService.stopTask(taskToGet.id);
+
+            return res.json(taskDto);
+        }catch(e){
+            next(e);
+        }
+    }
+
+    async resumeTask(req, res, next){
+        try{
+            const taskId = req.params.id;
+            const {refreshToken} = req.cookies;
+            const userData = await tokenService.validateRefreshToken(refreshToken);
+            const user = await UserModel.findById(userData.id)
+            if(!user){
+              throw ApiError.BadRequest('There is no such user');
+            }
+
+            const taskToGet = await TaskModel.findById(taskId);
+
+            if(!taskToGet){
+                throw ApiError.BadRequest('There is no such task');
+            }
+
+            if(taskToGet.userId != user.id){
+                throw ApiError.ForbidenError();
+            }
+            const result = await TaskService.resumeTask(taskToGet.id);
+
+            return res.json(result);
+        }catch(e){
             next(e);
         }
     }

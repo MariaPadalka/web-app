@@ -19,6 +19,7 @@
 .logout-button {
     background-color: #e7132cc8;
     margin-right: 20px;
+    margin-left: 10px;
     min-width: 130px;
     min-height: 45px;
     font-size: medium;
@@ -31,5 +32,39 @@
 
 .logout-button button:hover {
     background-color: #FF2E4C;
+}
+
+.admin-button {
+    background-color: #365587c8;
+    margin-right: 20px;
+    min-width: 130px;
+    min-height: 45px;
+    font-size: medium;
+    color: white;
+    border: none;
+    border-radius: 9px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.admin-button button:hover {
+    background-color: #3c2eff7c;
+}
+
+.user-button{
+    background-color: #378e54c8;
+    margin-right: 20px;
+    min-width: 130px;
+    min-height: 45px;
+    font-size: medium;
+    color: white;
+    border: none;
+    border-radius: 9px;
+    padding: 5px 10px;
+    cursor: pointer;
+}
+
+.user-button button:hover {
+    background-color: #2eff517c;
 }
   

@@ -5,6 +5,10 @@ const mailService = require("./mail-service");
 const tokenService = require("../services/token-service");
 const UserDto = require("../dto/user-dto");
 const ApiError = require("../exceptions/api-error");
+const TaskModel = require("../models/task-model");
+const UserTdto = require("../dto/userT-dto");
+const taskService = require("./task-service");
+const { ObjectId } = require('mongodb');
 
 class UserService {
   async registration(email, password, isAdmin) {
@@ -91,7 +95,31 @@ class UserService {
 
   async getAllUsers(){
     const users = await UserModel.find();
-    return users;
+    const usersDto = [];
+
+    for (const user of users) {
+      // Отримати кількість завдань для поточного користувача (псевдокод)
+      const numOfTasks = await TaskModel.count({ userId: user._id });
+      
+      const userDto = new UserTdto(user, numOfTasks);
+      usersDto.push(userDto);
+    }
+
+    return usersDto;
+  }
+
+  async deleteUserById(userId){
+    const userToDelete = await UserModel.findOne({_id: userId});
+    if(!userToDelete){
+      throw ApiError.BadRequest("There is no such user");
+    }
+    const tasks = await TaskModel.find({ userId: userToDelete._id });
+    for (const task of tasks) {
+      taskService.delete(task.id);
+    }
+    const user = await UserModel.deleteOne({_id: userId});
+    
+    return {user};
   }
 }
 module.exports = new UserService();

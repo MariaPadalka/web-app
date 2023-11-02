@@ -66,7 +66,17 @@ class UserController{
             const users = await UserService.getAllUsers();
             return res.json(users);
         } catch(e){
-            console.log(e);
+            next(e);
+        }
+    }
+
+    async deleteUserById(req, res, next){
+        try{
+            const userId = req.params.id;
+            const deletedUser = await UserService.deleteUserById(userId);
+            return res.json(deletedUser);
+        }catch(e){
+            next(e);
         }
     }
 }
