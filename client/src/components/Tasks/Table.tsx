@@ -171,7 +171,7 @@ const Tasks: React.FC = () =>{
                       setDetailsLoading(false);
                     }}
                   >
-                    View details
+                    Details
                   </Button>
                   
                   <Button
